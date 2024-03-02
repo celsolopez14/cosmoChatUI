@@ -22,7 +22,7 @@ export const TopBar = () => {
             color="inherit"
             aria-label="rexProfile" 
           >
-           <ReXProfile/> 
+           <ReXProfile width='28px' height='28px'/> 
           </IconButton>
           <Typography variant="h6" component="div" sx={{...styles.title}}>
             ReX

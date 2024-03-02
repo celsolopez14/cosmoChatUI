@@ -2,10 +2,12 @@ import React from 'react'
 import { Box, Button, Typography } from '@mui/material'
 import HomeBg from '../../assets/HomeBg.svg?react'
 import styles from './styles'
+import TopBar from '../../components/TopBar'
 
 export const WelcomePage = () => {
   return (
     <>
+    <TopBar/>
     <Box sx={{...styles.topBox}}>
         <HomeBg/>
     </Box>

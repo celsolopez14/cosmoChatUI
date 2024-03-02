@@ -32,7 +32,13 @@ const styles = {
         marginLeft:'18px', 
         marginTop:'16px', 
         marginRight:'18px', 
-        marginBottom:'16px'
+        marginBottom:'16px',
+        '&:hover, &:active':{
+            backgroundColor :'#00AFAC'
+        },
+        '&:focus':{
+            boxShadow:'none'
+        }
     },
     btnTxt:{
         fontFamily: 'Urbanist, sans-seriff', 
