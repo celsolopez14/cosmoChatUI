@@ -1,12 +1,13 @@
 const styles = {
-    box:{
-        flexGrow: 1, 
+    box:{ 
         display:'flex',
-        alignItems:'center'
+        alignItems:'center',
+        margin:2,
+        boxShadow: '4px 8px 24px 0px #F5F5F5',
     },
     chatDetailsBox:{
         flexGrow: 1, 
-        margin:2
+        margin:4,
     },
     name:{
         fontWeight:700,
