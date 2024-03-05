@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import { WelcomePage } from './pages/WelcomePage/WelcomePage.jsx';
 import { ChattingPage } from './pages/ChattingPage/ChattingPage.jsx';
+import { ChatPage } from './pages/ChatPage/ChatPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -17,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/ChattingPage",
     element: <ChattingPage/>,
+  },
+  {
+    path: "/ChatPage",
+    element: <ChatPage/>,
   }
 ]);
 

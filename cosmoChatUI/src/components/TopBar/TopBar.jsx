@@ -9,9 +9,14 @@ import Stats from '../../assets/Stats.svg?react';
 import ReXProfile from '../../assets/ReXProfile.svg?react';
 import Settings from '../../assets/Settings.svg?react';
 import styles from './styles';
+import { useNavigate } from 'react-router-dom';
 
 
 export const TopBar = () => {
+  const navigate = useNavigate();
+  const handleClick = () =>{
+    navigate("/");
+  }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='fixed' color='default' sx={{...styles.appBar}}>
@@ -20,7 +25,8 @@ export const TopBar = () => {
             size="large"
             edge="start"
             color="inherit"
-            aria-label="rexProfile" 
+            aria-label="rexProfile"
+            onClick={handleClick}
           >
            <ReXProfile width='28px' height='28px'/> 
           </IconButton>

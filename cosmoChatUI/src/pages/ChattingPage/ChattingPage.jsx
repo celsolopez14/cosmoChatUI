@@ -25,10 +25,6 @@ export const ChattingPage = () => {
           <ChatItem />
           <ChatItem />
           <ChatItem />
-          <ChatItem />
-          <ChatItem />
-          <ChatItem />
-          <ChatItem />
         </Grid>
       </Grid>
       <Box
