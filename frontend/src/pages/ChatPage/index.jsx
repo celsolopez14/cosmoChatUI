@@ -4,6 +4,12 @@ import styles from "../../styles/chatPage";
 import InputBox from "../../components/InputBox";
 
 export default function ChatPage() {
+
+  const handleText = async (text) =>{
+    // websocket connection
+    console.log("Sending text to db");
+  };
+
   return (
     <React.Fragment>
       <Box sx={{ position: "relative", overflow: "hidden", paddingTop:'70px' }}>
@@ -26,7 +32,7 @@ export default function ChatPage() {
           </ListItem>
         </List>
       </Box>
-      <InputBox />
+      <InputBox onHandleText={handleText} />
     </React.Fragment>
   );
 }

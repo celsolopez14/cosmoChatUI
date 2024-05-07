@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "@mui/material";
 
-export default function ReusableButton(props) {
+export default function ReusableButton({ text, onClick }) {
   return (
     <Button
+      onClick={onClick}
       variant="contained"
       sx={{
         marginTop: "10px",
@@ -14,7 +15,7 @@ export default function ReusableButton(props) {
         fontSize: 16,
       }}
     >
-      {props.text}
+      {text}
     </Button>
   );
 }

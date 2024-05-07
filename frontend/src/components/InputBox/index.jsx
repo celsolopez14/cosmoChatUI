@@ -1,30 +1,43 @@
 import React from "react";
-import { TextField, Grid } from "@mui/material";
+import { TextField, Grid, IconButton } from "@mui/material";
 import { ReactComponent as MessageButton } from "../../assets/MessageButton.svg";
 
-export default function InputBox() {
+export default function InputBox({ onHandleText }) {
+  const [text, setText] = React.useState("");
+  const onTextChange = (event) => {
+    setText(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    onHandleText(text);
+  };
   return (
     <Grid
       container
       justifyContent={"center"}
-      sx={{ bottom: 0, position: "fixed" }}
+      sx={{ bottom: 0, position: "fixed"}}
+      spacing={2}
     >
-      <Grid item sx={{ display: "flex" }}>
+      <Grid item xs={8} md={6}>
         <TextField
-          id="outlined-multiline-static"
+          onChange={onTextChange}
+          id="txtField"
           label=""
           rows={4}
           placeholder="Type a messsage to ReX..."
+          fullWidth
           sx={{
-            marginBottom: 5,
-            width: "300px",
             height: "56px",
-            marginRight: "10px",
             borderRadius: "12px",
             border: "1px solid transparent",
+            paddingLeft:"5px"
           }}
         />
-        <MessageButton width="56px" height="56px" />
+      </Grid>
+      <Grid item>
+      <IconButton onClick={handleSubmit} sx={{paddingTop:'2px', paddingLeft:'0px'}}>
+          <MessageButton />
+        </IconButton>
       </Grid>
     </Grid>
   );
