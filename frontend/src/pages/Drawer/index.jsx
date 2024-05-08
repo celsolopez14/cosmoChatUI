@@ -16,6 +16,9 @@ import ListItem from "@mui/material/ListItem";
 import { ReactComponent as ReXProfile } from "../../assets/ReXProfile.svg";
 import ChatPage from "../ChatPage";
 import ReusableButton from "../../components/Button";
+import { MyContext } from "../../context/context";
+import { getSessions } from "../../api/sessions";
+import Loading from "../../components/Loading";
 
 const drawerWidth = 240;
 
@@ -64,6 +67,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function ChatDrawer() {
+  const [loading, setLoading] = React.useState(true);
+  const { updateChatSessions, chatSessions, jwt } = React.useContext(MyContext);
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
 
@@ -75,10 +80,24 @@ export default function ChatDrawer() {
     setOpen(false);
   };
 
+  React.useEffect(() => {
+    const fetchChatSessions = async () => {
+      const response = await getSessions({ jwt: jwt });
+      console.log(response);
+      updateChatSessions(response);
+    };
+    fetchChatSessions();
+    setLoading(true)
+  }, []);
+
+  React.useEffect(() => {
+    setLoading(false)
+  }, [chatSessions]);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open} style={{background:"#6949FF"}}>
+      <AppBar position="fixed" open={open} style={{ background: "#6949FF" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -117,13 +136,41 @@ export default function ChatDrawer() {
             )}
           </IconButton>
         </DrawerHeader>
-        <Divider/>
-        <ReusableButton text="Start a new chat"/>
+        <Divider />
+        <ReusableButton text="Start a new chat" />
+        <Divider />
+        <List>
+          {chatSessions.map((session) => (
+            <ListItem
+              key={session.id}
+              onClick={() => {
+                console.log("Clicked me!");
+              }}
+            >
+              <Typography
+                noWrap
+                sx={{
+                  cursor: "pointer",
+                  transition: "background-color 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.1)", // Adjust the shadow properties as needed
+                  },
+                  padding: "5px",
+                  borderRadius: "10px",
+                }}
+              >
+                {session.messages[session.messages.length - 1].content}
+              </Typography>
+            </ListItem>
+          ))}
+        </List>
       </Drawer>
+      {(loading ? <Loading /> :
       <Main open={open}>
         <DrawerHeader />
-        <ChatPage />
+        <ChatPage chatSession={chatSessions[chatSessions.length - 1]} />
       </Main>
+      )}
     </Box>
   );
 }

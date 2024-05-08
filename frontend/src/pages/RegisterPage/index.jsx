@@ -7,15 +7,19 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { registerAccount } from "../../api/sessions";
 
 export default function RegisterPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    const response = registerAccount({
+      username: data.get("username"),
       email: data.get("email"),
       password: data.get("password"),
     });
+
+    console.log(response);
   };
 
   return (
