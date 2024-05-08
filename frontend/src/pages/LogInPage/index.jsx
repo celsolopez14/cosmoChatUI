@@ -10,16 +10,29 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
+import { loginAccount } from "../../api/sessions";
+import { MyContext } from "../../context/context";
 
 export default function LogInPage() {
   const navigate = useNavigate();
-  const handleSubmit = (event) => {
+  const { updateUsername, updateJWT, jwt } = React.useContext(MyContext);
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const response = await loginAccount(
+      {
+        email: data.get("email"),
+        password: data.get("password"),
+      },
+      updateUsername,
+      updateJWT
+    );
+
+    if (response.statusCode === 200) {
+      navigate("/drawer");
+    } else {
+      console.log(response.status);
+    }
   };
 
   const handleRegister = () => {
@@ -88,9 +101,13 @@ export default function LogInPage() {
           <Grid container>
             <Grid item>
               <Link
-              onClick={handleRegister}
+                onClick={handleRegister}
                 variant="body2"
-                sx={{ color: "#6949FF", fontFamily: "Urbanist", cursor: "pointer" }}
+                sx={{
+                  color: "#6949FF",
+                  fontFamily: "Urbanist",
+                  cursor: "pointer",
+                }}
               >
                 {"Don't have an account? Register here"}
               </Link>
