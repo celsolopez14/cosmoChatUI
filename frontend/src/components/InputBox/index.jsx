@@ -10,16 +10,18 @@ export default function InputBox({ onHandleText }) {
 
   const handleSubmit = () => {
     onHandleText(text);
+    setText("");
   };
   return (
     <Grid
       container
       justifyContent={"center"}
-      sx={{ bottom: 0, position: "fixed"}}
+      sx={{ bottom: 0, position: "fixed" }}
       spacing={2}
     >
       <Grid item xs={8} md={6}>
         <TextField
+          value={text}
           onChange={onTextChange}
           id="txtField"
           label=""
@@ -30,12 +32,15 @@ export default function InputBox({ onHandleText }) {
             height: "56px",
             borderRadius: "12px",
             border: "1px solid transparent",
-            paddingLeft:"5px"
+            paddingLeft: "5px",
           }}
         />
       </Grid>
       <Grid item>
-      <IconButton onClick={handleSubmit} sx={{paddingTop:'2px', paddingLeft:'0px'}}>
+        <IconButton
+          onClick={handleSubmit}
+          sx={{ paddingTop: "2px", paddingLeft: "0px" }}
+        >
           <MessageButton />
         </IconButton>
       </Grid>

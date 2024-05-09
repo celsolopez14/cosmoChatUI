@@ -17,7 +17,7 @@ import { ReactComponent as ReXProfile } from "../../assets/ReXProfile.svg";
 import ChatPage from "../ChatPage";
 import ReusableButton from "../../components/Button";
 import { MyContext } from "../../context/context";
-import { getSessions } from "../../api/sessions";
+import { createSession, getSessions } from "../../api/sessions";
 import Loading from "../../components/Loading";
 
 const drawerWidth = 240;
@@ -71,6 +71,7 @@ export default function ChatDrawer() {
   const { updateChatSessions, chatSessions, jwt } = React.useContext(MyContext);
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [chatSession, setChatSession] = React.useState(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -80,19 +81,29 @@ export default function ChatDrawer() {
     setOpen(false);
   };
 
+  const handleSelectedChat = (chatSession) => {
+    return chatSession ? <ChatPage chatSession={chatSession} /> : <ChatPage chatSession={chatSessions[chatSessions.length - 1]} />
+  };
+
+  const handleCreateNewChat = async () => {
+    const response = await createSession({ jwt: jwt });
+    if(response !== null) {
+      setChatSession(response);
+    };
+  };
+
   React.useEffect(() => {
     const fetchChatSessions = async () => {
       const response = await getSessions({ jwt: jwt });
-      console.log(response);
+
+      const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+      
       updateChatSessions(response);
+      await delay(1000);
+      setLoading(false)
     };
     fetchChatSessions();
-    setLoading(true)
   }, []);
-
-  React.useEffect(() => {
-    setLoading(false)
-  }, [chatSessions]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -137,14 +148,15 @@ export default function ChatDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <ReusableButton text="Start a new chat" />
+        <ReusableButton text="Start a new chat" onClick={handleCreateNewChat} />
         <Divider />
         <List>
           {chatSessions.map((session) => (
             <ListItem
               key={session.id}
               onClick={() => {
-                console.log("Clicked me!");
+                console.log(session);
+                setChatSession(session);
               }}
             >
               <Typography
@@ -159,7 +171,7 @@ export default function ChatDrawer() {
                   borderRadius: "10px",
                 }}
               >
-                {session.messages[session.messages.length - 1].content}
+                {session.messages.length > 0 ? session.messages[session.messages.length - 1].content : "New Chat"}
               </Typography>
             </ListItem>
           ))}
@@ -168,7 +180,7 @@ export default function ChatDrawer() {
       {(loading ? <Loading /> :
       <Main open={open}>
         <DrawerHeader />
-        <ChatPage chatSession={chatSessions[chatSessions.length - 1]} />
+        {handleSelectedChat(chatSession)}
       </Main>
       )}
     </Box>
