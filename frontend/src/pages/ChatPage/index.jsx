@@ -8,6 +8,7 @@ export default function ChatPage({ chatSession }) {
   const { jwt } = React.useContext(MyContext);
   const [messages, setMessages] = React.useState([]);
   const [webSocketRef, setWebSocketRef] = React.useState(null);
+  const listRef = React.useRef(null);
 
   React.useEffect(() => {
     setMessages(chatSession.messages);
@@ -28,6 +29,14 @@ export default function ChatPage({ chatSession }) {
       console.log("WebSocket connection closed.");
     };
   }, [chatSession]);
+
+  React.useEffect(() => {
+    // Scroll to the bottom of the list on component update
+    if (listRef.current) {
+      const { scrollHeight, clientHeight } = listRef.current;
+      listRef.current.scrollTop = scrollHeight - clientHeight;
+    }
+  }, [messages]);
 
   const handleText = (text) => {
     if (text.trim() === "") return;
@@ -52,9 +61,9 @@ export default function ChatPage({ chatSession }) {
   return (
     <React.Fragment>
       <Box
-        sx={{ position: "relative", overflow: "hidden", paddingTop: "70px" }}
+        sx={{ position: "relative", overflow: "hidden", paddingTop: "25px" }}
       >
-        <List sx={{ maxWidth: "100%", maxHeight: "76.5vh", overflow: "auto" }}>
+        <List ref={listRef} sx={{ maxWidth: "100%", maxHeight: "82vh", overflow: "auto" }}>
           {messages.map((message) => (
             <ListItem
               key={`${message.id}`}

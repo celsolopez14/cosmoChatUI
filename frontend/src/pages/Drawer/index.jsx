@@ -17,8 +17,9 @@ import { ReactComponent as ReXProfile } from "../../assets/ReXProfile.svg";
 import ChatPage from "../ChatPage";
 import ReusableButton from "../../components/Button";
 import { MyContext } from "../../context/context";
-import { createSession, getSessions } from "../../api/sessions";
+import { createSession, getSessions, signOut } from "../../api/sessions";
 import Loading from "../../components/Loading";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -67,6 +68,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function ChatDrawer() {
+  const navigate = useNavigate();
   const [loading, setLoading] = React.useState(true);
   const { updateChatSessions, chatSessions, jwt } = React.useContext(MyContext);
   const theme = useTheme();
@@ -82,107 +84,137 @@ export default function ChatDrawer() {
   };
 
   const handleSelectedChat = (chatSession) => {
-    return chatSession ? <ChatPage chatSession={chatSession} /> : <ChatPage chatSession={chatSessions[chatSessions.length - 1]} />
+    return chatSession ? (
+      <ChatPage chatSession={chatSession} />
+    ) : (
+      <ChatPage chatSession={chatSessions[chatSessions.length - 1]} />
+    );
   };
 
   const handleCreateNewChat = async () => {
     const response = await createSession({ jwt: jwt });
-    if(response !== null) {
+    if (response !== null) {
       setChatSession(response);
-    };
+    }
   };
 
-  React.useEffect(() => {
-    const fetchChatSessions = async () => {
-      const response = await getSessions({ jwt: jwt });
+  const handleSignOut = async () => {
+    const response = await signOut({ jwt: jwt });
+    if(response.statusCode === 200) {
+      navigate("/");
+    }
+  }
 
-      const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-      
-      updateChatSessions(response);
-      await delay(1000);
-      setLoading(false)
+  React.useEffect(() => {
+    if (!jwt) return;
+    const initialFetchChatSessions = async () => {
+      try {
+        const response = await getSessions({ jwt: jwt });
+        updateChatSessions(response);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchChatSessions();
-  }, []);
+    initialFetchChatSessions();
+  }, [jwt]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open} style={{ background: "#6949FF" }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
+    <React.Fragment>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Box sx={{ display: "flex" }}>
+          <CssBaseline />
+          <AppBar
+            position="fixed"
+            open={open}
+            style={{ background: "#6949FF" }}
           >
-            <MenuIcon />
-          </IconButton>
-          <ReXProfile width="80px" height="90px" />
-          <Typography variant="h6" noWrap component="div">
-            ReX Chat
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <ReusableButton text="Start a new chat" onClick={handleCreateNewChat} />
-        <Divider />
-        <List>
-          {chatSessions.map((session) => (
-            <ListItem
-              key={session.id}
-              onClick={() => {
-                console.log(session);
-                setChatSession(session);
-              }}
-            >
-              <Typography
-                noWrap
-                sx={{
-                  cursor: "pointer",
-                  transition: "background-color 0.3s ease",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.1)", // Adjust the shadow properties as needed
-                  },
-                  padding: "5px",
-                  borderRadius: "10px",
-                }}
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{ mr: 2, ...(open && { display: "none" }) }}
               >
-                {session.messages.length > 0 ? session.messages[session.messages.length - 1].content : "New Chat"}
+                <MenuIcon />
+              </IconButton>
+              <ReXProfile width="80px" height="90px" />
+              <Typography variant="h6" noWrap component="div">
+                ReX Chat
               </Typography>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      {(loading ? <Loading /> :
-      <Main open={open}>
-        <DrawerHeader />
-        {handleSelectedChat(chatSession)}
-      </Main>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            sx={{
+              width: drawerWidth,
+              flexShrink: 0,
+              "& .MuiDrawer-paper": {
+                width: drawerWidth,
+                boxSizing: "border-box",
+              },
+            }}
+            variant="persistent"
+            anchor="left"
+            open={open}
+          >
+            <DrawerHeader>
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === "ltr" ? (
+                  <ChevronLeftIcon />
+                ) : (
+                  <ChevronRightIcon />
+                )}
+              </IconButton>
+            </DrawerHeader>
+            <Divider />
+            <ReusableButton
+              text="Start a new chat"
+              onClick={handleCreateNewChat}
+            />
+            <Divider />
+            <List sx={{ minHeight: "80vh" }}>
+              {chatSessions.map((session) => (
+                <ListItem
+                  key={session.id}
+                  onClick={() => {
+                    console.log(session);
+                    setChatSession(session);
+                  }}
+                >
+                  <Typography
+                    noWrap
+                    sx={{
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease",
+                      "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.1)", // Adjust the shadow properties as needed
+                      },
+                      padding: "5px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {session.messages.length > 0
+                      ? session.messages[session.messages.length - 1].content
+                      : "New Chat"}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+            <ReusableButton
+              text="SignOut"
+              onClick={handleSignOut}
+            />
+          </Drawer>
+          <Main open={open}>
+            <DrawerHeader />
+            {handleSelectedChat(chatSession)}
+          </Main>
+        </Box>
       )}
-    </Box>
+    </React.Fragment>
   );
 }
