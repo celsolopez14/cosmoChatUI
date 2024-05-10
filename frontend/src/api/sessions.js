@@ -56,3 +56,19 @@ export const loginAccount = async (data, updateUsername, updateJWT) => {
     console.log(e);
   }
 };
+
+export const signOut = async (data) => {
+  try {
+    const response = await sessions.post("/account/signout", null, {
+      headers: {
+        Authorization: `Bearer ${data.jwt}`,
+      },
+    });
+    localStorage.clear();
+    if (response.status === 200) {
+      return { status: response.statusText, statusCode: response.status };
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
